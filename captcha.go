@@ -46,22 +46,15 @@ func draw(text string, width int, height int, fontSize float64) image.Image {
 	dc := gg.NewContext(width, height)
 
 	font, _ := truetype.Parse(goregular.TTF)
-
 	face := truetype.NewFace(font, &truetype.Options{
 		Size: fontSize,
 	})
-
 	dc.SetFontFace(face)
 
 	w, h := dc.MeasureString(text)
-
 	dc.DrawRoundedRectangle(0, 0, 2*w, 2*h, 20)
-
 	dc.SetHexColor("#ffffff")
-
 	dc.Fill()
-
-	dc.SetHexColor("#8AAAE5")
 
 	u := 1
 	if rand.Intn(2)%2 == 0 {
@@ -69,7 +62,7 @@ func draw(text string, width int, height int, fontSize float64) image.Image {
 	}
 
 	dc.RotateAbout(gg.Radians(float64(u*7)), w/2, h/2)
-
+	dc.SetHexColor("#8AAAE5")
 	dc.DrawString(text, w/2, h+h/2)
 
 	dc.Stroke()
