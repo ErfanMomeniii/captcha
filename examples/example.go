@@ -1,5 +1,11 @@
 package main
 
-func main() {
+import (
+	"github.com/ErfanMomeniii/captcha.git"
+)
 
+func main() {
+	c := captcha.New(300, 400, 40)
+	im := c.Numeric(6)
+	c.Save("./out.png", im)
 }

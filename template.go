@@ -13,13 +13,16 @@ var Templates = []Template{
 		Background: "#FBF8BE",
 		Color:      "#234E70",
 	}, {
-		Background: "",
-		Color:      "",
+		Background: "#000000",
+		Color:      "#f3ca20",
 	}, {
-		Background: "",
-		Color:      "",
+		Background: "d9a5b3",
+		Color:      "#1868ae",
 	}, {
-		Background: "",
-		Color:      "",
+		Background: "fff1e1",
+		Color:      "1d3c45",
+	}, {
+		Background: "#ced7d8",
+		Color:      "#f47a60",
 	},
 }

@@ -43,6 +43,8 @@ func (c *Captcha) Save(path string, im image.Image) error {
 func draw(text string, width int, height int, fontSize float64) image.Image {
 	rand.Seed(time.Now().UnixNano())
 
+	template := Templates[rand.Intn(len(Templates))]
+
 	dc := gg.NewContext(width, height)
 
 	font, _ := truetype.Parse(goregular.TTF)
@@ -52,17 +54,17 @@ func draw(text string, width int, height int, fontSize float64) image.Image {
 	dc.SetFontFace(face)
 
 	w, h := dc.MeasureString(text)
-	dc.DrawRoundedRectangle(0, 0, 2*w, 2*h, 20)
-	dc.SetHexColor("#ffffff")
+	dc.DrawRoundedRectangle(0, 0, 2*w, 2*h, 7)
+	dc.SetHexColor(template.Background)
 	dc.Fill()
 
-	u := 1
+	clockwise := 1
 	if rand.Intn(2)%2 == 0 {
-		u = -1
+		clockwise = -1
 	}
 
-	dc.RotateAbout(gg.Radians(float64(u*7)), w/2, h/2)
-	dc.SetHexColor("#8AAAE5")
+	dc.RotateAbout(gg.Radians(float64(clockwise*7)), w/2, h/2)
+	dc.SetHexColor(template.Color)
 	dc.DrawString(text, w/2, h+h/2)
 
 	dc.Stroke()
