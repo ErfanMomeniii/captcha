@@ -7,11 +7,11 @@ type Template struct {
 
 var Templates = []Template{
 	{
-		Background: "#FFFFFF",
-		Color:      "#8AAAE5",
+		Background: "#ffffff",
+		Color:      "#8aaae5",
 	}, {
-		Background: "#FBF8BE",
-		Color:      "#234E70",
+		Background: "#fBf8Be",
+		Color:      "#234e70",
 	}, {
 		Background: "#000000",
 		Color:      "#f3ca20",
@@ -24,5 +24,8 @@ var Templates = []Template{
 	}, {
 		Background: "#ced7d8",
 		Color:      "#f47a60",
+	}, {
+		Background: "#ffffff",
+		Color:      "#cc9999",
 	},
 }
