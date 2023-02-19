@@ -71,6 +71,8 @@ func draw(text string, width int, height int, fontSize float64) (image.Image, er
 	dc.SetHexColor(template.Color)
 	dc.DrawString(text, w/2, h+h/2)
 
+	dc.DrawLine(w/2, h, w/2+w, h)
+
 	dc.Stroke()
 
 	return dc.Image(), nil
