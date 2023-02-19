@@ -6,6 +6,6 @@ import (
 
 func main() {
 	c := captcha.New(300, 400, 40)
-	im := c.Numeric(6)
+	im, _ := c.Numeric(6)
 	c.Save("./out.png", im)
 }

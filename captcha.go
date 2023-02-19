@@ -18,16 +18,16 @@ type Captcha struct {
 	FontWeight float64
 }
 
-func (c *Captcha) Numeric(length int) image.Image {
+func (c *Captcha) Numeric(length int) (image.Image, error) {
 	return draw(randstr.Dec(length), c.Width, c.Height, c.FontWeight)
 }
 
-func (c *Captcha) Alphabetical(length int) image.Image {
+func (c *Captcha) Alphabetical(length int) (image.Image, error) {
 	return draw(randstr.String(length, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 		c.Width, c.Height, c.FontWeight)
 }
 
-func (c *Captcha) Mixed(length int) image.Image {
+func (c *Captcha) Mixed(length int) (image.Image, error) {
 	return draw(randstr.String(length), c.Width, c.Height, c.FontWeight)
 }
 
@@ -40,14 +40,18 @@ func (c *Captcha) Save(path string, im image.Image) error {
 	return png.Encode(file, im)
 }
 
-func draw(text string, width int, height int, fontSize float64) image.Image {
+func draw(text string, width int, height int, fontSize float64) (image.Image, error) {
 	rand.Seed(time.Now().UnixNano())
 
 	template := Templates[rand.Intn(len(Templates))]
 
 	dc := gg.NewContext(width, height)
 
-	font, _ := truetype.Parse(goregular.TTF)
+	font, err := truetype.Parse(goregular.TTF)
+	if err != nil {
+		return nil, err
+	}
+
 	face := truetype.NewFace(font, &truetype.Options{
 		Size: fontSize,
 	})
@@ -69,7 +73,7 @@ func draw(text string, width int, height int, fontSize float64) image.Image {
 
 	dc.Stroke()
 
-	return dc.Image()
+	return dc.Image(), nil
 }
 
 func New(width int, height int, fontWeight float64) *Captcha {
