@@ -43,7 +43,7 @@ func (c *Captcha) Save(path string, im image.Image) error {
 func draw(text string, width int, height int, fontSize float64) (image.Image, error) {
 	rand.Seed(time.Now().UnixNano())
 
-	template := Templates[rand.Intn(len(Templates))]
+	template := RandTemplate()
 
 	dc := gg.NewContext(width, height)
 

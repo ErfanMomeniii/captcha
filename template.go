@@ -1,5 +1,10 @@
 package captcha
 
+import (
+	"math/rand"
+	"time"
+)
+
 type Template struct {
 	Background string
 	Color      string
@@ -28,4 +33,10 @@ var Templates = []Template{
 		Background: "#ffffff",
 		Color:      "#cc9999",
 	},
+}
+
+func RandTemplate() Template {
+	rand.Seed(time.Now().UnixNano())
+
+	return Templates[rand.Intn(len(Templates))]
 }
