@@ -25,7 +25,7 @@ import "github.com/ErfanMomeniii/captcha"
 
 # Examples
 
-Here are several examples produced images with only using deault templates.
+Here are several examples produced images by only using default templates.
 
 
 [<img src="./assets/photo/example1.png">](assets/photo/example1.png)
