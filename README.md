@@ -23,7 +23,7 @@ Next, include it in your application:
 import "github.com/ErfanMomeniii/captcha"
 ``` 
 
-# Examples
+## Examples
 
 Here are several examples produced images by only using default templates.
 
