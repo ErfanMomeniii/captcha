@@ -23,3 +23,20 @@ Next, include it in your application:
 import "github.com/ErfanMomeniii/captcha"
 ``` 
 
+# Examples
+
+Here are several examples produced images with only using deault templates.
+
+
+[<img src="./assets/photo/example1.png">](assets/photo/example1.png)
+[<img src="./assets/photo/example2.png">](assets/photo/example2.png)
+[<img src="./assets/photo/example3.png">](assets/photo/example3.png)
+[<img src="./assets/photo/example4.png">](assets/photo/example4.png)
+[<img src="./assets/photo/example5.png">](assets/photo/example5.png)
+[<img src="./assets/photo/example6.png">](assets/photo/example6.png)
+[<img src="./assets/photo/example7.png">](assets/photo/example7.png)
+[<img src="./assets/photo/example8.png">](assets/photo/example8.png)
+[<img src="./assets/photo/example9.png">](assets/photo/example9.png)
+[<img src="./assets/photo/example10.png">](assets/photo/example10.png)
+[<img src="./assets/photo/example11.png">](assets/photo/example11.png)
+[<img src="./assets/photo/example12.png">](assets/photo/example12.png)

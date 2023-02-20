@@ -58,7 +58,7 @@ func draw(text string, width int, height int, fontSize float64) (image.Image, er
 	dc.SetFontFace(face)
 
 	w, h := dc.MeasureString(text)
-	dc.DrawRoundedRectangle(0, 0, 2*w, 2*h, 7)
+	dc.DrawRectangle(0, 0, float64(width), float64(height))
 	dc.SetHexColor(template.Background)
 	dc.Fill()
 
@@ -67,11 +67,11 @@ func draw(text string, width int, height int, fontSize float64) (image.Image, er
 		clockwise = -1
 	}
 
-	dc.RotateAbout(gg.Radians(float64(clockwise*7)), w/2, h/2)
+	dc.RotateAbout(gg.Radians(float64(clockwise*7)), float64(width/2), float64(height/2))
 	dc.SetHexColor(template.Color)
-	dc.DrawString(text, w/2, h+h/2)
+	dc.DrawString(text, float64(width/2)-w/2, float64(height/2)+h/2)
 
-	dc.DrawLine(w/2, h, w/2+w, h)
+	dc.DrawLine(float64(width/2)-w/2, float64(height/2), float64(width/2)+w/2, float64(height/2))
 
 	dc.Stroke()
 
