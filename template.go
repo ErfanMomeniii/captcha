@@ -5,9 +5,10 @@ import (
 	"time"
 )
 
+// Template is an instantiation that used for defining some templates for captcha image.
 type Template struct {
-	Background string
-	Color      string
+	Background string // Background color of captcha image
+	Color      string // Color of the captcha word
 }
 
 var Templates = []Template{

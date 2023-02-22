@@ -13,11 +13,11 @@ import (
 	"time"
 )
 
-// Captcha is instantiation used for defining some information of the captcha image.
+// Captcha is an instantiation used for defining some information of the captcha image.
 type Captcha struct {
-	Width      int     // width of the generated image
-	Height     int     // height of the generated image
-	FontWeight float64 // font weight of captcha word
+	Width      int     // Width of the generated image
+	Height     int     // Height of the generated image
+	FontWeight float64 // FontWeight of captcha word
 }
 
 // Numeric generates numeric captcha image with input length.
