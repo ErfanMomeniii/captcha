@@ -122,7 +122,7 @@ func main() {
 
 ## Examples
 
-Here are several examples produced images by only using default templates.
+Here are several examples of produced captcha images by only using default templates.
 
 [<img src="./assets/photo/example1.png">](assets/photo/example1.png)
 [<img src="./assets/photo/example2.png">](assets/photo/example2.png)
