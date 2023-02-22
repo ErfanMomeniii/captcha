@@ -1,4 +1,4 @@
-module github.com/ErfanMomeniii/captcha.git
+module github.com/ErfanMomeniii/captcha
 
 go 1.19
 

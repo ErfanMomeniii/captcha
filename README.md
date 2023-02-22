@@ -10,23 +10,118 @@
 <img src="https://img.shields.io/badge/Version-1.0.0-red?style=for-the-badge&logo=none" alt="version" />
 </p>
 
-# captcha
-a lightweight and powerful package for generating captcha pictures and keys for verifying that with a lot of options.
+# Captcha
+
+Captcha is a lightweight and powerful package for generating captcha pictures and keys for verifying that with a lot of
+options.
 
 # Documentation
+
 ## Install
+
 ```bash
 go get github.com/ErfanMomeniii/captcha
 ```   
+
 Next, include it in your application:
+
 ```bash
 import "github.com/ErfanMomeniii/captcha"
 ``` 
 
+## Quick Start
+
+The following examples demonstrates how to generate captcha image with ideal width, height and font weight:
+
+### 1. Numeric Captcha
+
+```go
+package main
+
+import (
+	"github.com/ErfanMomeniii/captcha"
+)
+
+func main() {
+	c := captcha.New(300, 400, 40)
+
+	im, _ := c.Numeric(6)
+	// im is a numeric captcha that has a numeric word of 
+	// length six in it
+
+	c.save("./", im)
+	// it saves image (im) in the input path
+}
+
+```
+
+### 2. Alphabetical Captcha
+
+```go
+package main
+
+import (
+	"github.com/ErfanMomeniii/captcha"
+)
+
+func main() {
+	c := captcha.New(300, 400, 40)
+
+	im, _ := c.Alphabetical(6)
+	// im is a Alphabetical captcha that has an alphabetical word of 
+	// length six in it
+
+	c.save("./", im)
+	// it saves image (im) in the input path
+}
+
+```
+
+### 3. Mixed Captcha
+
+```go
+package main
+
+import (
+	"github.com/ErfanMomeniii/captcha"
+)
+
+func main() {
+	c := captcha.New(300, 400, 40)
+
+	im, _ := c.Alphabetical(6)
+	// im is a Mixed captcha that has a mixed word of 
+	// length six in it (combine of alphabets and numbers)
+
+	_ = c.save("./", im)
+	// it saves image (im) in the input path
+}
+
+```
+
+:warning: This package uses some defined templates for choosing random template from those(you can those see in [this](./template.go)) that can customize by the
+following :
+
+```go
+package main
+
+import (
+	"github.com/ErfanMomeniii/captcha"
+)
+
+func main() {
+	captcha.Templates = []captcha.Template{
+		{
+			Background: "#ffffff",
+			Color:      "#000000",
+		},
+	}
+}
+```
+
 ## Examples
 
 Here are several examples produced images by only using default templates.
-
 
 [<img src="./assets/photo/example1.png">](assets/photo/example1.png)
 [<img src="./assets/photo/example2.png">](assets/photo/example2.png)

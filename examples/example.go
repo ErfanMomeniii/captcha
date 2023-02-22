@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ErfanMomeniii/captcha.git"
+	"github.com/ErfanMomeniii/captcha"
 )
 
 func main() {
