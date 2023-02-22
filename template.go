@@ -35,6 +35,7 @@ var Templates = []Template{
 	},
 }
 
+// RandTemplate generates a random template from the template array.
 func RandTemplate() Template {
 	rand.Seed(time.Now().UnixNano())
 

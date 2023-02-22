@@ -13,25 +13,31 @@ import (
 	"time"
 )
 
+// Captcha is instantiation used for defining some information of the captcha image.
 type Captcha struct {
-	Width      int
-	Height     int
-	FontWeight float64
+	Width      int     // width of the generated image
+	Height     int     // height of the generated image
+	FontWeight float64 // font weight of captcha word
 }
 
+// Numeric generates numeric captcha image with input length.
 func (c *Captcha) Numeric(length int) (image.Image, error) {
 	return draw(randstr.Dec(length), c.Width, c.Height, c.FontWeight)
 }
 
+// Alphabetical generates alphabetical captcha image with input length.
 func (c *Captcha) Alphabetical(length int) (image.Image, error) {
 	return draw(randstr.String(length, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 		c.Width, c.Height, c.FontWeight)
 }
 
+// Mixed generates mixed (combination of alphabetical and numeric words)
+// captcha image with input length.
 func (c *Captcha) Mixed(length int) (image.Image, error) {
 	return draw(randstr.String(length), c.Width, c.Height, c.FontWeight)
 }
 
+// Save saves png image in the input path
 func (c *Captcha) Save(path string, im image.Image) error {
 	if !strings.HasSuffix(path, ".png") {
 		path += ".png"
@@ -47,6 +53,7 @@ func (c *Captcha) Save(path string, im image.Image) error {
 	return png.Encode(file, im)
 }
 
+// draw generates captcha images with input text, width, height and font size.
 func draw(text string, width int, height int, fontSize float64) (image.Image, error) {
 	rand.Seed(time.Now().UnixNano())
 
@@ -85,6 +92,7 @@ func draw(text string, width int, height int, fontSize float64) (image.Image, er
 	return dc.Image(), nil
 }
 
+// New creates a new instance of Captcha.
 func New(width int, height int, fontWeight float64) *Captcha {
 	return &Captcha{
 		Width:      width,
