@@ -10,6 +10,7 @@
 <img src="https://img.shields.io/badge/Version-1.0.0-red?style=for-the-badge&logo=none" alt="version" />
 </p>
 
+# Captcha
 Captcha is a lightweight and powerful package for generating captcha pictures with defined keys.
 
 # Documentation
