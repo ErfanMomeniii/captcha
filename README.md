@@ -91,7 +91,7 @@ func main() {
 
 	im, _ := c.Alphabetical(6)
 	// im is a Mixed captcha that has a mixed word of 
-	// length six in it (combine of alphabets and numbers)
+	// length six in it (combination of alphabets and numbers)
 
 	_ = c.save("./", im)
 	// it saves image (im) in the input path
@@ -117,6 +117,7 @@ func main() {
 		},
 	}
 }
+
 ```
 
 ## Examples
