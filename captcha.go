@@ -9,6 +9,7 @@ import (
 	"image/png"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -32,11 +33,17 @@ func (c *Captcha) Mixed(length int) (image.Image, error) {
 }
 
 func (c *Captcha) Save(path string, im image.Image) error {
+	if !strings.HasSuffix(path, ".png") {
+		path += ".png"
+	}
+
 	file, err := os.Create(path)
 	if err != nil {
 		return err
 	}
+
 	defer file.Close()
+
 	return png.Encode(file, im)
 }
 
