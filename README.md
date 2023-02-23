@@ -118,6 +118,54 @@ func main() {
 
 ```
 
+## Usage
+#### func New
+```go
+func New(width int, height int, fontWeight float64) *Captcha
+```
+New creates a new instance of Captcha.
+#### type Captcha
+```go
+type Captcha struct {
+	Width      int     // Width of the generated image
+	Height     int     // Height of the generated image
+	FontWeight float64 // FontWeight of captcha word
+}
+```
+Captcha is an instantiation used for defining some information of the captcha image.
+#### func (*captcha) Numeric
+```go
+func (c *Captcha) Numeric(length int) (image.Image, error)
+```
+Numeric generates numeric captcha image with input length.
+#### func (*captcha) Alphabetical
+```go
+func (c *Captcha) Alphabetical(length int) (image.Image, error)
+```
+Alphabetical generates alphabetical captcha image with input length.
+#### func (*captcha) Mixed
+```go
+func (c *Captcha) Mixed(length int) (image.Image, error)
+```
+Mixed generates mixed (combination of alphabetical and numeric words) captcha image with input length. 
+#### func (*captcha) Save
+```go
+func (c *Captcha) Save(path string, im image.Image) error
+```
+Save saves png image in the input path
+#### type Template
+```go
+type Template struct {
+	Background string // Background color of captcha image
+	Color      string // Color of the captcha word
+}
+```
+Template is an instantiation that used for defining some templates for captcha image.
+#### func RandTemplate
+```go
+func RandTemplate() Template
+```
+RandTemplate generates a random template from the template array.
 ## Examples
 
 Here are several examples of generated captcha images by only using default templates.
