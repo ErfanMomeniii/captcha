@@ -1,6 +1,6 @@
-module github.com/ErfanMomeniii/captcha
+module github.com/ErfanMomeniii/captcha/v2
 
-go 1.19
+go 1.26
 
 require (
 	github.com/ErfanMomeniii/randstr v0.0.0-20230217223820-7a163e2ab1a4
