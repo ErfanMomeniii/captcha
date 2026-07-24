@@ -15,6 +15,12 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Use bash everywhere (including the Windows runner) so command-line parsing is
+# identical across operating systems.
+defaults:
+  run:
+    shell: bash
+
 jobs:
   lint:
     name: Lint & vet
@@ -25,7 +31,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: stable
+          go-version-file: go.mod
           check-latest: true
 
       - name: Verify gofmt
@@ -40,10 +46,14 @@ jobs:
       - name: go vet
         run: go vet ./...
 
+      # Build golangci-lint from source with the Go toolchain above so its
+      # build version is >= the module's `go` directive (a prebuilt binary can
+      # be built with an older Go and refuse to run).
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: latest
+          install-mode: goinstall
 
   test:
     name: Test (Go ${{ matrix.go }} / ${{ matrix.os }})
@@ -90,7 +100,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: stable
+          go-version-file: go.mod
           check-latest: true
 
       - name: Build all packages
