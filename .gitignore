@@ -1,3 +1,43 @@
-.idea
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Compiled objects & test binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Coverage & profiling output
+*.out
+coverage.*
+*.prof
+
+# Go workspace files
+go.work
+go.work.sum
+
+# Generated captcha artifacts (from examples/tests)
 out.png
-test
+out.wav
+/test/
+
+# AI assistant instruction / context files
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+GEMINI.md
+.cursorrules
+.windsurfrules
+.aider*
+.github/copilot-instructions.md
+
+# AI-generated workflow docs (specs, plans)
+docs/superpowers/
