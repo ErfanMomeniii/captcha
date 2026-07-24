@@ -1,102 +1,253 @@
 package captcha
 
 import (
-	"github.com/ErfanMomeniii/randstr"
-	"github.com/fogleman/gg"
-	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font/gofont/goregular"
+	"errors"
 	"image"
 	"image/png"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"strings"
-	"time"
+
+	"github.com/ErfanMomeniii/randstr"
+	"github.com/fogleman/gg"
+	"github.com/golang/freetype/truetype"
 )
 
-// Captcha is an instantiation used for defining some information of the captcha image.
+const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+// Defaults used by New when no size/font options are given.
+const (
+	defaultWidth      = 240
+	defaultHeight     = 80
+	defaultFontWeight = 36
+)
+
+// Captcha holds the rendering configuration for captcha images.
 type Captcha struct {
 	Width      int     // Width of the generated image
 	Height     int     // Height of the generated image
-	FontWeight float64 // FontWeight of captcha word
+	FontWeight float64 // Font size of the captcha word
+	Noise      Noise   // Distortion level
 }
 
-// Numeric generates numeric captcha image with input length.
-func (c *Captcha) Numeric(length int) (image.Image, error) {
-	return draw(randstr.Dec(length), c.Width, c.Height, c.FontWeight)
+// Result carries the drawn key and the rendered image. Store Text server-side
+// and compare it against the user's answer.
+type Result struct {
+	Text  string
+	Image image.Image
 }
 
-// Alphabetical generates alphabetical captcha image with input length.
-func (c *Captcha) Alphabetical(length int) (image.Image, error) {
-	return draw(randstr.String(length, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
-		c.Width, c.Height, c.FontWeight)
+// New creates a Captcha. With no options it uses sensible defaults
+// (240x80, font 36); customize with WithSize, WithFontSize, and WithNoise.
+//
+//	c := captcha.New()                                  // defaults
+//	c := captcha.New(captcha.WithNoise(captcha.NoiseHigh))
+//	c := captcha.New(captcha.WithSize(320, 120), captcha.WithFontSize(48))
+func New(opts ...Option) *Captcha {
+	c := &Captcha{
+		Width:      defaultWidth,
+		Height:     defaultHeight,
+		FontWeight: defaultFontWeight,
+	}
+	for _, opt := range opts {
+		opt(c)
+	}
+	return c
 }
 
-// Mixed generates mixed (combination of alphabetical and numeric words)
-// captcha image with input length.
-func (c *Captcha) Mixed(length int) (image.Image, error) {
-	return draw(randstr.String(length), c.Width, c.Height, c.FontWeight)
+// std is the zero-config generator backing the package-level helpers.
+var std = New()
+
+// Numeric generates a numeric captcha of the given length using the default
+// generator. For custom sizing or noise, use New.
+func Numeric(length int) (*Result, error) { return std.Numeric(length) }
+
+// Alphabetical generates a letters-only captcha using the default generator.
+func Alphabetical(length int) (*Result, error) { return std.Alphabetical(length) }
+
+// Mixed generates an alphanumeric captcha using the default generator.
+func Mixed(length int) (*Result, error) { return std.Mixed(length) }
+
+// Custom generates a captcha from charset using the default generator.
+func Custom(length int, charset string) (*Result, error) { return std.Custom(length, charset) }
+
+// Word renders one random word from words using the default generator.
+func Word(words []string) (*Result, error) { return std.Word(words) }
+
+// Math generates an arithmetic captcha using the default generator.
+func Math() (*Result, error) { return std.Math() }
+
+// Match reports whether the user's input matches the expected key, ignoring
+// case and surrounding whitespace. Use it to verify a submitted answer against
+// the Result.Text you stored when the captcha was issued.
+func Match(expected, input string) bool {
+	expected = strings.TrimSpace(expected)
+	return expected != "" && strings.EqualFold(strings.TrimSpace(input), expected)
 }
 
-// Save saves png image in the input path
+// Numeric generates a numeric captcha of the given length.
+func (c *Captcha) Numeric(length int) (*Result, error) {
+	return c.render(randstr.Dec(length))
+}
+
+// Alphabetical generates a captcha of letters of the given length.
+func (c *Captcha) Alphabetical(length int) (*Result, error) {
+	return c.render(randstr.String(length, alphabet))
+}
+
+// Mixed generates an alphanumeric captcha of the given length.
+func (c *Captcha) Mixed(length int) (*Result, error) {
+	return c.render(randstr.String(length))
+}
+
+// Custom generates a captcha of the given length using only characters from
+// charset.
+func (c *Captcha) Custom(length int, charset string) (*Result, error) {
+	if length <= 0 {
+		return nil, errors.New("captcha: length must be positive")
+	}
+	if charset == "" {
+		return nil, errors.New("captcha: charset must not be empty")
+	}
+	return c.render(randstr.String(length, charset))
+}
+
+// Word renders one randomly chosen word from words.
+func (c *Captcha) Word(words []string) (*Result, error) {
+	if len(words) == 0 {
+		return nil, errors.New("captcha: words must not be empty")
+	}
+	return c.render(words[rand.Intn(len(words))])
+}
+
+// render draws text and wraps it in a Result.
+func (c *Captcha) render(text string) (*Result, error) {
+	im, err := c.draw(text)
+	if err != nil {
+		return nil, err
+	}
+	return &Result{Text: text, Image: im}, nil
+}
+
+// Save writes a PNG image to path, creating parent directories as needed.
 func (c *Captcha) Save(path string, im image.Image) error {
 	if !strings.HasSuffix(path, ".png") {
 		path += ".png"
 	}
-
+	if dir := filepath.Dir(path); dir != "" {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return err
+		}
+	}
 	file, err := os.Create(path)
 	if err != nil {
 		return err
 	}
-
-	defer file.Close()
-
-	return png.Encode(file, im)
+	if err := png.Encode(file, im); err != nil {
+		_ = file.Close()
+		return err
+	}
+	return file.Close()
 }
 
-// draw generates captcha images with input text, width, height and font size.
-func draw(text string, width int, height int, fontSize float64) (image.Image, error) {
-	rand.Seed(time.Now().UnixNano())
+// draw renders text onto an image using a random template and the configured
+// noise level.
+func (c *Captcha) draw(text string) (image.Image, error) {
+	if c.Width <= 0 || c.Height <= 0 {
+		return nil, errors.New("captcha: width and height must be positive")
+	}
+	if c.FontWeight <= 0 {
+		return nil, errors.New("captcha: font weight must be positive")
+	}
 
-	template := RandTemplate()
-
-	dc := gg.NewContext(width, height)
-
-	font, err := truetype.Parse(goregular.TTF)
+	font, err := loadFont()
 	if err != nil {
 		return nil, err
 	}
 
-	face := truetype.NewFace(font, &truetype.Options{
-		Size: fontSize,
-	})
+	tpl := RandTemplate()
+	dc := gg.NewContext(c.Width, c.Height)
+	face := truetype.NewFace(font, &truetype.Options{Size: c.FontWeight})
 	dc.SetFontFace(face)
 
-	w, h := dc.MeasureString(text)
-	dc.DrawRectangle(0, 0, float64(width), float64(height))
-	dc.SetHexColor(template.Background)
+	// Background.
+	dc.DrawRectangle(0, 0, float64(c.Width), float64(c.Height))
+	dc.SetHexColor(tpl.Background)
 	dc.Fill()
 
-	clockwise := 1
-	if rand.Intn(2)%2 == 0 {
+	// Global rotation (original behavior).
+	clockwise := 1.0
+	if rand.Intn(2) == 0 {
 		clockwise = -1
 	}
+	dc.RotateAbout(gg.Radians(clockwise*7), float64(c.Width)/2, float64(c.Height)/2)
 
-	dc.RotateAbout(gg.Radians(float64(clockwise*7)), float64(width/2), float64(height/2))
-	dc.SetHexColor(template.Color)
-	dc.DrawString(text, float64(width/2)-w/2, float64(height/2)+h/2)
+	dc.SetHexColor(tpl.Color)
 
-	dc.DrawLine(float64(width/2)-w/2, float64(height/2), float64(width/2)+w/2, float64(height/2))
+	if c.Noise >= NoiseMedium {
+		c.drawJittered(dc, text)
+	} else {
+		w, h := dc.MeasureString(text)
+		dc.DrawString(text, float64(c.Width)/2-w/2, float64(c.Height)/2+h/2)
+	}
 
+	// Baseline strike-through (original behavior).
+	w, _ := dc.MeasureString(text)
+	dc.DrawLine(float64(c.Width)/2-w/2, float64(c.Height)/2, float64(c.Width)/2+w/2, float64(c.Height)/2)
 	dc.Stroke()
+
+	// Reset the transform so noise is scattered in image space, not the
+	// rotated coordinate space.
+	dc.Identity()
+	c.applyNoise(dc, tpl.Color)
 
 	return dc.Image(), nil
 }
 
-// New creates a new instance of Captcha.
-func New(width int, height int, fontWeight float64) *Captcha {
-	return &Captcha{
-		Width:      width,
-		Height:     height,
-		FontWeight: fontWeight,
+// drawJittered draws each character with a small random rotation and vertical
+// offset.
+func (c *Captcha) drawJittered(dc *gg.Context, text string) {
+	total, h := dc.MeasureString(text)
+	x := float64(c.Width)/2 - total/2
+	midY := float64(c.Height)/2 + h/2
+	for _, r := range text {
+		s := string(r)
+		cw, _ := dc.MeasureString(s)
+		dy := (rand.Float64()*2 - 1) * h * 0.15
+		angle := (rand.Float64()*2 - 1) * 0.35 // radians, ~±20°
+		dc.Push()
+		dc.RotateAbout(angle, x+cw/2, midY)
+		dc.DrawString(s, x, midY+dy)
+		dc.Pop()
+		x += cw
+	}
+}
+
+// applyNoise scatters dots and lines according to the noise level.
+func (c *Captcha) applyNoise(dc *gg.Context, hexColor string) {
+	var dots, lines int
+	switch c.Noise {
+	case NoiseLow:
+		dots, lines = 40, 0
+	case NoiseMedium:
+		dots, lines = 80, 2
+	case NoiseHigh:
+		dots, lines = 160, 4
+	default:
+		return
+	}
+	dc.SetHexColor(hexColor)
+	for i := 0; i < dots; i++ {
+		dc.DrawPoint(rand.Float64()*float64(c.Width), rand.Float64()*float64(c.Height), 1+rand.Float64())
+		dc.Fill()
+	}
+	for i := 0; i < lines; i++ {
+		dc.SetLineWidth(0.5 + rand.Float64())
+		dc.DrawLine(
+			rand.Float64()*float64(c.Width), rand.Float64()*float64(c.Height),
+			rand.Float64()*float64(c.Width), rand.Float64()*float64(c.Height),
+		)
+		dc.Stroke()
 	}
 }
